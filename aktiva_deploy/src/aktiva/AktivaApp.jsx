@@ -1050,76 +1050,259 @@ export default function App() {
         </div>
 
         {/* SISWA: progress milestone */}
-        <div style={{...cardStyle,background: C.card,color: C.text,border: `1px solid ${C.border}`}}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '14px' }}>
-              <div>
-                <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', opacity: 0.7 }}>Progres Milestone</div>
-                <div style={{ fontSize: '28px', fontWeight: 800, marginTop: '4px' }}>{pts} Poin</div>
-              </div>
-              <div style={{ fontSize: '13px', opacity: 0.9, fontWeight: 600 }}>
-                Menuju <strong>{nextTier.label}</strong> ({nextTier.min} poin) · {progressPct}%
-              </div>
+{currentUser.role === 'siswa' && (
+  <div
+    style={{
+      ...cardStyle,
+      background: C.card,
+      color: C.text,
+      border: `1px solid ${C.border}`
+    }}
+  >
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end',
+        flexWrap: 'wrap',
+        gap: '16px',
+        marginBottom: '14px'
+      }}
+    >
+      <div>
+        <div
+          style={{
+            fontSize: '12px',
+            fontWeight: 700,
+            letterSpacing: '1.5px',
+            textTransform: 'uppercase',
+            opacity: 0.7
+          }}
+        >
+          Progres Milestone
+        </div>
+
+        <div
+          style={{
+            fontSize: '28px',
+            fontWeight: 800,
+            marginTop: '4px'
+          }}
+        >
+          {pts} Poin
+        </div>
+      </div>
+
+      <div
+        style={{
+          fontSize: '13px',
+          opacity: 0.9,
+          fontWeight: 600
+        }}
+      >
+        Menuju <strong>{nextTier.label}</strong> ({nextTier.min} poin) · {progressPct}%
+      </div>
+    </div>
+
+    <div
+      style={{
+        height: '10px',
+        background: C.border,
+        borderRadius: '20px',
+        overflow: 'hidden',
+        marginBottom: '20px'
+      }}
+    >
+      <div
+        style={{
+          width: `${progressPct}%`,
+          height: '100%',
+          background: C.accent,
+          borderRadius: '20px',
+          transition: 'width 0.5s'
+        }}
+      />
+    </div>
+
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+        gap: '12px'
+      }}
+    >
+      {tiers.map((b) => {
+        const reached = pts >= b.min;
+
+        return (
+          <div
+            key={b.label}
+            style={{
+              background: reached ? C.accentLight : C.bg,
+              borderRadius: '14px',
+              padding: '14px 12px',
+              textAlign: 'center',
+              border: `1px solid ${reached ? C.accent : C.border}`,
+              opacity: reached ? 1 : 0.6
+            }}
+          >
+            <div
+              style={{
+                fontSize: '26px',
+                lineHeight: 1,
+                marginBottom: '6px'
+              }}
+            >
+              {b.icon}
             </div>
-            <div style={{height: '10px',background: C.border, borderRadius: '20px', overflow: 'hidden', marginBottom: '20px' }}>
-              <div style={{ width: `${progressPct}%`, height: '100%', background: C.accent, borderRadius: '20px', transition: 'width 0.5s' }} />
+
+            <div
+              style={{
+                fontSize: '13px',
+                fontWeight: 700
+              }}
+            >
+              {b.label}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px' }}>
-              {tiers.map(b => {
-                const reached = pts >= b.min;
-                return (
-                  <div key={b.label} style={{ background: reached ? C.accentLight : C.bg, borderRadius: '14px', padding: '14px 12px', textAlign: 'center',border: `1px solid ${reached ? C.accent : C.border}`, opacity: reached ? 1 : 0.6 }}>
-                    <div style={{ fontSize: '26px', lineHeight: 1, marginBottom: '6px' }}>{b.icon}</div>
-                    <div style={{ fontSize: '13px', fontWeight: 700 }}>{b.label}</div>
-                    <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '2px' }}>{b.min}+ poin</div>
-                  </div>
-                );
-              })}
+
+            <div
+              style={{
+                fontSize: '11px',
+                opacity: 0.7,
+                marginTop: '2px'
+              }}
+            >
+              {b.min}+ poin
             </div>
           </div>
-        )}
+        );
+      })}
+    </div>
+  </div>
+)}
 
         {/* SISWA: AI Future Path entry card */}
-        {currentUser.role === 'siswa' && (
+{currentUser.role === 'siswa' && (
+  <div
+    onClick={() => setActiveTab('future-path')}
+    style={{
+      ...cardStyle,
+      cursor: 'pointer',
+      background: C.card,
+      border: `1px solid ${C.border}`,
+      color: C.text,
+      transition: 'transform 0.25s ease, box-shadow 0.25s ease'
+    }}
+    onMouseEnter={(e) => {
+      e.currentTarget.style.transform = 'translateY(-2px)';
+    }}
+    onMouseLeave={(e) => {
+      e.currentTarget.style.transform = 'translateY(0)';
+    }}
+  >
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '20px'
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '18px',
+          flex: 1,
+          minWidth: 240
+        }}
+      >
+        <div
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: '16px',
+            background: C.accentLight,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <Sparkles size={28} color={C.accent} />
+        </div>
+
+        <div>
           <div
-            onClick={() => setActiveTab('future-path')}
             style={{
-              position: 'relative', overflow: 'hidden', cursor: 'pointer',
-              background: `linear-gradient(135deg, ${C.accent} 0%, ${C.accentMid} 55%, ${C.accent} 100%)`,
-              padding: '28px 32px', borderRadius: '22px', color: '#fff',
-              boxShadow: isDarkMode ? '0 20px 40px -18px rgba(0,0,0,0.6)' : '0 20px 40px -18px rgba(46,125,140,0.45)',
-              transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '10px',
+              fontWeight: 800,
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              background: C.accentLight,
+              color: C.accent,
+              padding: '4px 10px',
+              borderRadius: '20px',
+              marginBottom: '8px'
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
           >
-            <div style={{ position: 'absolute', top: -50, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.10)' }} />
-            <div style={{ position: 'absolute', bottom: -70, right: 100, width: 160, height: 160, borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }} />
-            <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '18px', flex: 1, minWidth: 240 }}>
-                <div style={{ width: 56, height: 56, borderRadius: '16px', background: 'rgba(255,255,255,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(6px)' }}>
-                  <Sparkles size={28} color="#fff" />
-                </div>
-                <div>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '10px', fontWeight: 800, letterSpacing: '2px', textTransform: 'uppercase', background: 'rgba(255,255,255,0.18)', padding: '4px 10px', borderRadius: '20px', marginBottom: '8px' }}>
-                    <Rocket size={12} /> AI Feature · Baru
-                  </div>
-                  <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#fff' }}>AI Future Path</h3>
-                  <p style={{ margin: '4px 0 0', fontSize: '13px', opacity: 0.92, color: '#fff', lineHeight: 1.5 }}>
-                    Dapatkan rekomendasi jurusan & kampus terbaik berdasarkan minat, skill, dan prestasimu.
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); setActiveTab('future-path'); }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', background: '#fff', color: C.accent, border: 'none', padding: '12px 20px', borderRadius: '12px', fontWeight: 700, fontSize: '14px', cursor: 'pointer', boxShadow: '0 8px 18px -8px rgba(0,0,0,0.25)' }}
-              >
-                <GraduationCap size={16} /> Rancang Masa Depanku
-              </button>
-            </div>
+            <Rocket size={12} />
+            AI Feature · Baru
           </div>
 
-        )}
+          <h3
+            style={{
+              margin: 0,
+              fontSize: '20px',
+              fontWeight: 800,
+              color: C.text
+            }}
+          >
+            AI Future Path
+          </h3>
 
+          <p
+            style={{
+              margin: '4px 0 0',
+              fontSize: '13px',
+              color: C.textSecondary,
+              lineHeight: 1.5
+            }}
+          >
+            Dapatkan rekomendasi jurusan & kampus terbaik berdasarkan minat,
+            skill, dan prestasimu.
+          </p>
+        </div>
+      </div>
+
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setActiveTab('future-path');
+        }}
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          background: C.accent,
+          color: '#fff',
+          border: 'none',
+          padding: '12px 20px',
+          borderRadius: '12px',
+          fontWeight: 700,
+          fontSize: '14px',
+          cursor: 'pointer'
+        }}
+      >
+        <GraduationCap size={16} />
+        Rancang Masa Depanku
+      </button>
+    </div>
+  </div>
+)}
 
         {/* CHARTS — Siswa */}
         {currentUser.role === 'siswa' && (() => {
