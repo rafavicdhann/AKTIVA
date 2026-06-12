@@ -2765,9 +2765,23 @@ export default function App() {
       <div className="aktiva-spacer" style={{ width: '240px', flexShrink: 0 }} />
 
       {/* MAIN LAYOUT */}
-      <main style={{ flex: 1, height: '100vh', overflowY: 'auto', padding: '24px 20px 80px 20px', width: '100%' }}>
-        <div style={{ maxWidth: '1320px', margin: '0 auto' }}>
-          
+<main
+  style={{
+    flex: 1,
+    height: '100vh',
+    overflowY: 'auto',
+    padding: '24px 32px 80px',
+    width: '100%',
+    boxSizing: 'border-box'
+  }}
+>
+  <div
+    style={{
+      width: '100%',
+      maxWidth: '1800px',
+      margin: '0 auto'
+    }}
+  >
           {/* HEADER TOPBAR WITH NOTIFICATION & DARK MODE TOGGLE */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
