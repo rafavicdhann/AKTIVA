@@ -1050,8 +1050,7 @@ export default function App() {
         </div>
 
         {/* SISWA: progress milestone */}
-        {currentUser.role === 'siswa' && (
-          <div style={{ ...cardStyle, background: `linear-gradient(135deg, ${C.accent}, ${C.accentMid})`, color: '#fff', border: 'none' }}>
+        <div style={{...cardStyle,background: C.card,color: C.text,border: `1px solid ${C.border}`}}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px', marginBottom: '14px' }}>
               <div>
                 <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', opacity: 0.7 }}>Progres Milestone</div>
@@ -1061,14 +1060,14 @@ export default function App() {
                 Menuju <strong>{nextTier.label}</strong> ({nextTier.min} poin) · {progressPct}%
               </div>
             </div>
-            <div style={{ height: '10px', background: 'rgba(255,255,255,0.2)', borderRadius: '20px', overflow: 'hidden', marginBottom: '20px' }}>
-              <div style={{ width: `${progressPct}%`, height: '100%', background: '#fff', borderRadius: '20px', transition: 'width 0.5s' }} />
+            <div style={{height: '10px',background: C.border, borderRadius: '20px', overflow: 'hidden', marginBottom: '20px' }}>
+              <div style={{ width: `${progressPct}%`, height: '100%', background: C.accent, borderRadius: '20px', transition: 'width 0.5s' }} />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: '12px' }}>
               {tiers.map(b => {
                 const reached = pts >= b.min;
                 return (
-                  <div key={b.label} style={{ background: reached ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.06)', borderRadius: '14px', padding: '14px 12px', textAlign: 'center', border: reached ? '1px solid rgba(255,255,255,0.35)' : '1px solid transparent', opacity: reached ? 1 : 0.6 }}>
+                  <div key={b.label} style={{ background: reached ? C.accentLight : C.bg, borderRadius: '14px', padding: '14px 12px', textAlign: 'center',border: `1px solid ${reached ? C.accent : C.border}`, opacity: reached ? 1 : 0.6 }}>
                     <div style={{ fontSize: '26px', lineHeight: 1, marginBottom: '6px' }}>{b.icon}</div>
                     <div style={{ fontSize: '13px', fontWeight: 700 }}>{b.label}</div>
                     <div style={{ fontSize: '11px', opacity: 0.7, marginTop: '2px' }}>{b.min}+ poin</div>
