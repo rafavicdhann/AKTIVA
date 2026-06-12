@@ -2684,7 +2684,7 @@ export default function App() {
       <style>{`
         @media (min-width: 768px) {
           .aktiva-sidebar { transform: translateX(0) !important; }
-          .aktiva-spacer { display: block !important; }
+          .aktiva-spacer { display: none !important; }
           .aktiva-bottomnav { display: none !important; }
           .aktiva-hamburger { display: none !important; }
         }
@@ -2762,8 +2762,7 @@ export default function App() {
       </aside>
 
       {/* SIDEBAR SPACER DESKTOP */}
-      <div className="aktiva-spacer" style={{ width: '240px', flexShrink: 0 }} />
-
+      <div className="aktiva-spacer" style={{ width: '0px', flexShrink: 0 }} />
       {/* MAIN LAYOUT */}
 <main
   style={{
