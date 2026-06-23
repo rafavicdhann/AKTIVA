@@ -7,7 +7,7 @@ import {
   ShieldCheck, Users, FileText, CheckCircle, XCircle, 
   Award, BookOpen, Plus, Bell, LogOut, 
   Newspaper, TrendingUp, Edit, Trash2, UserCog, Upload, X, Send, Star, AlertTriangle, Activity,
-  Sun, Moon, Calendar, Search, Trophy, Sparkles, Rocket, Archive, Tag, ChevronRight, GraduationCap, Lightbulb, Globe
+  Sun, Moon, Calendar, Search, Trophy, Sparkles, Rocket, Archive, Tag, ChevronRight, GraduationCap, Lightbulb, Globe, ArrowLeft, Pin
 } from 'lucide-react';
 
 // ============================================================
@@ -129,8 +129,8 @@ const INIT_TRYOUTS = [
 ];
 
 const INIT_NEWS = [
-  { id: 1, title: 'Olimpiade Sains Nasional (OSN) 2026', category: 'Lomba Eksternal', content: 'Pendaftaran OSN tingkat sekolah dibuka hingga 30 Juni 2026. Segera daftarkan dirimu!', date: '2026-05-26', deadline: '2026-06-30', imageUrl: null, source: 'admin' },
-  { id: 2, title: 'Panduan Penggunaan Portal AKTIVA', category: 'Kegiatan Sekolah', content: 'Seluruh siswa diwajibkan melengkapi portofolio kegiatan semester ini melalui platform AKTIVA.', date: '2026-05-25', deadline: null, imageUrl: null, source: 'admin' },
+  { id: 1, title: 'Olimpiade Sains Nasional (OSN) 2026', category: 'Lomba Eksternal', content: 'Pendaftaran OSN tingkat sekolah dibuka hingga 30 Juni 2026. Segera daftarkan dirimu!', date: '2026-05-26', deadline: '2026-06-30', imageUrl: null, source: 'admin', pinned: false },
+  { id: 2, title: 'Panduan Penggunaan Portal AKTIVA', category: 'Kegiatan Sekolah', content: 'Seluruh siswa diwajibkan melengkapi portofolio kegiatan semester ini melalui platform AKTIVA.', date: '2026-05-25', deadline: null, imageUrl: null, source: 'admin', pinned: true },
 ];
 
 // ============================================================
@@ -525,13 +525,20 @@ export default function App() {
       date: new Date().toISOString().split('T')[0], 
       deadline: newsDeadline || null,
       imageUrl: newsImageUrl,
-      source: 'admin'
+      source: 'admin',
+      pinned: false
     };
     
     setNews([newEntry, ...news]);
     setNewsTitle(''); setNewsContent(''); setNewsImageUrl(null); setNewsImageName(''); setNewsDeadline('');
     if(newsImgRef.current) newsImgRef.current.value = '';
     showToast('Pengumuman berhasil diposting!', 'success');
+  };
+
+  const handleTogglePin = (id) => {
+    setNews(prev => prev.map(n => n.id === id ? { ...n, pinned: !n.pinned } : n));
+    const target = news.find(n => n.id === id);
+    showToast(target?.pinned ? 'Kegiatan dilepas dari pin.' : 'Kegiatan disematkan ke dashboard siswa!', 'success');
   };
 
   // ---- USULAN SISWA (struktur siap inject API eksternal nanti) ----
@@ -967,20 +974,16 @@ export default function App() {
         return { subject: g.subject, rata: vals.length ? Math.round(vals.reduce((a,b)=>a+b,0)/vals.length) : 0 };
       });
 
-    // Progress milestone
-    const tiers = [
-      { label: 'Pemula', min: 5, icon: '🌱' },
-      { label: 'Aktif', min: 30, icon: '⚡' },
-      { label: 'Berprestasi', min: 80, icon: '🏆' },
-      { label: 'Inspiratif', min: 200, icon: '🌟' },
-    ];
+    // Progress milestone — sistem bintang, 1 bintang = 50 poin, tanpa batas maksimal
+    const POIN_PER_BINTANG = 50;
     const pts = currentUser.points || 0;
-    const nextTier = tiers.find(t => pts < t.min) || tiers[tiers.length - 1];
-    const prevMin = (() => {
-      const reached = tiers.filter(t => pts >= t.min);
-      return reached.length ? reached[reached.length - 1].min : 0;
-    })();
-    const progressPct = Math.min(100, Math.round(((pts - prevMin) / (nextTier.min - prevMin || 1)) * 100));
+    const fullStars = Math.floor(pts / POIN_PER_BINTANG);
+    const currentCycleStart = fullStars * POIN_PER_BINTANG;
+    const progressPct = Math.min(100, Math.round(((pts - currentCycleStart) / POIN_PER_BINTANG) * 100));
+    const nextStarPoin = currentCycleStart + POIN_PER_BINTANG;
+    // Tampilkan 5 slot bintang per "baris", looping terus tanpa batas (mod 5 untuk display)
+    const starsInCurrentRow = fullStars % 5;
+    const rowNumber = Math.floor(fullStars / 5) + 1;
 
     // Admin: tren registrasi (mock dari users yg ada — semua dihitung "bulan ini")
     const adminStats = {
@@ -1034,23 +1037,54 @@ export default function App() {
         <div style={{
           position: 'relative', overflow: 'hidden',
           background: `linear-gradient(135deg, ${C.accent} 0%, ${C.accentMid} 100%)`,
-          padding: '36px 40px', borderRadius: '24px', color: '#fff',
-          boxShadow: isDarkMode ? '0 20px 40px -20px rgba(0,0,0,0.6)' : '0 20px 40px -20px rgba(46,125,140,0.4)',
+          padding: '16px 22px', borderRadius: '16px', color: '#fff',
+          boxShadow: isDarkMode ? '0 10px 20px -14px rgba(0,0,0,0.5)' : '0 10px 20px -14px rgba(46,125,140,0.35)',
         }}>
-          <div style={{ position: 'absolute', top: -60, right: -60, width: 220, height: 220, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
-          <div style={{ position: 'absolute', bottom: -80, right: 80, width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.06)' }} />
+          <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
           <div style={{ position: 'relative', zIndex: 1 }}>
-            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.8, marginBottom: '8px' }}>
+            <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '1.6px', textTransform: 'uppercase', opacity: 0.78, marginBottom: '4px' }}>
               {currentUser.role === 'admin' ? 'Dashboard Administrator' : currentUser.role === 'guru' ? `Dashboard Guru · ${currentUser.subject || ''}` : 'Dashboard Siswa'}
             </div>
-            <h2 style={{ fontSize: '30px', fontWeight: 800, margin: 0, color: '#fff' }}>Halo, {currentUser.name} 👋</h2>
-            <p style={{ margin: '6px 0 0', fontSize: '15px', opacity: 0.92, color: '#fff' }}>
+            <h2 style={{ fontSize: '19px', fontWeight: 800, margin: 0, color: '#fff' }}>Halo, {currentUser.name} 👋</h2>
+            <p style={{ margin: '3px 0 0', fontSize: '12.5px', opacity: 0.9, color: '#fff' }}>
               {currentUser.role === 'siswa' && 'Pantau poin, portofolio, dan progres akademikmu di sini.'}
               {currentUser.role === 'guru'  && 'Ringkasan kelas wali, validasi, dan distribusi nilai.'}
               {currentUser.role === 'admin' && 'Ringkasan pengguna, pendaftaran, dan aktivitas sekolah.'}
             </p>
           </div>
         </div>
+
+        {/* PINNED ACTIVITY BANNER — hanya muncul jika admin menyematkan kegiatan */}
+        {currentUser.role === 'siswa' && news.some(n => n.pinned) && (() => {
+          const pinnedNews = news.find(n => n.pinned);
+          return (
+            <div style={{
+              background: C.warningLight, border: `1.5px solid ${C.warning}`, borderRadius: '14px',
+              padding: '14px 18px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              gap: '14px', flexWrap: 'wrap',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: C.warning, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Pin size={17} color="#fff" fill="#fff" />
+                </div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ fontSize: '10.5px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: C.warning, marginBottom: '2px' }}>
+                    Kegiatan Disematkan Sekolah
+                  </div>
+                  <div style={{ fontSize: '13.5px', fontWeight: 700, color: C.text, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {pinnedNews.title}
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={() => setActiveTab('pengumuman')}
+                style={{ ...btnStyle(C.warning, 'sm'), flexShrink: 0, whiteSpace: 'nowrap' }}
+              >
+                Lihat Detail <ChevronRight size={14} />
+              </button>
+            </div>
+          );
+        })()}
 
         {/* STAT CARDS */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
@@ -1131,7 +1165,7 @@ export default function App() {
           fontWeight: 600
         }}
       >
-        Menuju <strong>{nextTier.label}</strong> ({nextTier.min} poin) · {progressPct}%
+        Bintang ke-{fullStars + 1} pada {nextStarPoin} poin · {progressPct}%
       </div>
     </div>
 
@@ -1155,59 +1189,26 @@ export default function App() {
       />
     </div>
 
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-        gap: '12px'
-      }}
-    >
-      {tiers.map((b) => {
-        const reached = pts >= b.min;
-
-        return (
-          <div
-            key={b.label}
-            style={{
-              background: reached ? C.accentLight : C.bg,
-              borderRadius: '14px',
-              padding: '14px 12px',
-              textAlign: 'center',
-              border: `1px solid ${reached ? C.accent : C.border}`,
-              opacity: reached ? 1 : 0.6
-            }}
-          >
-            <div
-              style={{
-                fontSize: '26px',
-                lineHeight: 1,
-                marginBottom: '6px'
-              }}
-            >
-              {b.icon}
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+      <div style={{ display: 'flex', gap: '6px' }}>
+        {[0, 1, 2, 3, 4].map(i => {
+          const isFull = i < starsInCurrentRow;
+          const isPartial = i === starsInCurrentRow && progressPct > 0;
+          return (
+            <div key={i} style={{ position: 'relative', width: '32px', height: '32px' }}>
+              <Star size={32} color={C.border} fill={C.border} style={{ position: 'absolute', top: 0, left: 0 }} />
+              {(isFull || isPartial) && (
+                <div style={{ position: 'absolute', top: 0, left: 0, width: isFull ? '100%' : `${progressPct}%`, height: '100%', overflow: 'hidden' }}>
+                  <Star size={32} color={C.warning} fill={C.warning} />
+                </div>
+              )}
             </div>
-
-            <div
-              style={{
-                fontSize: '13px',
-                fontWeight: 700
-              }}
-            >
-              {b.label}
-            </div>
-
-            <div
-              style={{
-                fontSize: '11px',
-                opacity: 0.7,
-                marginTop: '2px'
-              }}
-            >
-              {b.min}+ poin
-            </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
+      <div style={{ fontSize: '12px', fontWeight: 700, color: C.text, opacity: 0.75 }}>
+        Total {fullStars} bintang{rowNumber > 1 ? ` · Level ${rowNumber}` : ''}
+      </div>
     </div>
   </div>
 )}
@@ -1541,6 +1542,21 @@ export default function App() {
     const cardStyle = { background: C.card, padding: '24px', borderRadius: '20px', border: `1px solid ${C.border}`, boxShadow: isDarkMode ? '0 4px 14px rgba(0,0,0,0.25)' : '0 4px 14px rgba(15,23,42,0.04)' };
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        {/* BACK BUTTON */}
+        <button
+          onClick={() => setActiveTab('dashboard')}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            background: 'transparent', border: `1px solid ${C.border}`, color: C.stone,
+            padding: '9px 16px', borderRadius: '12px', fontWeight: 600, fontSize: '13px',
+            cursor: 'pointer', alignSelf: 'flex-start', transition: 'all 0.15s',
+          }}
+          onMouseEnter={e => { e.currentTarget.style.background = C.accentLight; e.currentTarget.style.color = C.accent; e.currentTarget.style.borderColor = C.accent; }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = C.stone; e.currentTarget.style.borderColor = C.border; }}
+        >
+          <ArrowLeft size={16} /> Kembali ke Dashboard
+        </button>
+
         {/* HERO */}
         <div style={{ position: 'relative', overflow: 'hidden', background: `linear-gradient(135deg, #6D28D9 0%, ${C.accent} 50%, ${C.accentMid} 100%)`, padding: '32px 36px', borderRadius: '24px', color: '#fff', boxShadow: '0 20px 40px -20px rgba(109,40,217,0.5)' }}>
           <div style={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
@@ -2387,14 +2403,24 @@ export default function App() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '16px' }}>
           {news.map(n => (
-            <div key={n.id} style={{ background: C.card, padding: '20px', borderRadius: '12px', border: `1px solid ${C.border}`, position: 'relative' }}>
-              <button onClick={() => setConfirmDialog({
-                  message: 'Yakin mau hapus berita ini?',
-                  onConfirm: () => { setNews(news.filter(x => x.id !== n.id)); setConfirmDialog(null); showToast('Berita dihapus', 'success'); }
-                })} style={{ position: 'absolute', top: '16px', right: '16px', background: 'none', border: 'none', color: C.danger, cursor: 'pointer' }}>
-                  <Trash2 size={16} />
-              </button>
-              <div style={{ display: 'inline-block', padding: '4px 10px', background: C.accentLight, color: C.accent, borderRadius: '4px', fontSize: '11px', fontWeight: '600', marginBottom: '12px' }}>{n.category}</div>
+            <div key={n.id} style={{ background: C.card, padding: '20px', borderRadius: '12px', border: n.pinned ? `1.5px solid ${C.warning}` : `1px solid ${C.border}`, position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '16px', right: '16px', display: 'flex', gap: '8px' }}>
+                <button onClick={() => handleTogglePin(n.id)} title={n.pinned ? 'Lepas pin' : 'Sematkan ke dashboard siswa'} style={{ background: n.pinned ? C.warningLight : 'none', border: n.pinned ? `1px solid ${C.warning}` : 'none', borderRadius: '8px', padding: '4px', color: n.pinned ? C.warning : C.stone, cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                  <Pin size={15} fill={n.pinned ? C.warning : 'none'} />
+                </button>
+                <button onClick={() => setConfirmDialog({
+                    message: 'Yakin mau hapus berita ini?',
+                    onConfirm: () => { setNews(news.filter(x => x.id !== n.id)); setConfirmDialog(null); showToast('Berita dihapus', 'success'); }
+                  })} style={{ background: 'none', border: 'none', color: C.danger, cursor: 'pointer' }}>
+                    <Trash2 size={16} />
+                </button>
+              </div>
+              {n.pinned && (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 10px', background: C.warningLight, color: C.warning, borderRadius: '4px', fontSize: '10px', fontWeight: '700', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.4px' }}>
+                  <Pin size={10} fill={C.warning} /> Disematkan di Dashboard
+                </div>
+              )}
+              <div style={{ display: 'inline-block', padding: '4px 10px', background: C.accentLight, color: C.accent, borderRadius: '4px', fontSize: '11px', fontWeight: '600', marginBottom: '12px', marginLeft: n.pinned ? '6px' : '0' }}>{n.category}</div>
               <h4 style={{ margin: '0 0 8px', fontSize: '15px', color: C.text, paddingRight: '24px' }}>{n.title}</h4>
               <p style={{ margin: '0 0 12px', fontSize: '13px', color: C.stone, lineHeight: '1.5' }}>{n.content}</p>
               {n.imageUrl && <img src={n.imageUrl} alt={n.title} style={{ width: '100%', maxHeight: '140px', objectFit: 'cover', borderRadius: '8px', marginBottom: '12px' }} />}
