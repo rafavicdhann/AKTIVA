@@ -1045,7 +1045,7 @@ export default function App() {
             <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '1.6px', textTransform: 'uppercase', opacity: 0.78, marginBottom: '4px' }}>
               {currentUser.role === 'admin' ? 'Dashboard Administrator' : currentUser.role === 'guru' ? `Dashboard Guru · ${currentUser.subject || ''}` : 'Dashboard Siswa'}
             </div>
-            <h2 style={{ fontSize: '19px', fontWeight: 800, margin: 0, color: '#fff' }}>Halo, {currentUser.name} 👋</h2>
+            <h2 style={{ fontSize: '19px', fontWeight: 800, margin: 0, color: '#fff' }}>Halo, {currentUser.name} </h2>
             <p style={{ margin: '3px 0 0', fontSize: '12.5px', opacity: 0.9, color: '#fff' }}>
               {currentUser.role === 'siswa' && 'Pantau poin, portofolio, dan progres akademikmu di sini.'}
               {currentUser.role === 'guru'  && 'Ringkasan kelas wali, validasi, dan distribusi nilai.'}
