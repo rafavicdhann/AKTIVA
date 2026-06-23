@@ -1036,11 +1036,11 @@ export default function App() {
         {/* HERO */}
         <div style={{
           position: 'relative', overflow: 'hidden',
-          background: `radial-gradient(circle at top right, ${C.accentMid} 0%, ${C.accent} 60%, #1A5F6E 100%)`,
+          background: `linear-gradient(135deg, ${C.accent} 0%, ${C.accentMid} 45%, #6D28D9 100%)`,
           padding: '16px 22px', borderRadius: '16px', color: '#fff',
           boxShadow: isDarkMode ? '0 10px 20px -14px rgba(0,0,0,0.5)' : '0 10px 20px -14px rgba(46,125,140,0.35)',
         }}>
-          <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: `linear-gradient(135deg, ${C.accent} 0%, ${C.accentMid} 45%, #6D28D9 100%)`, }} />
+          <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: `radial-gradient(circle at top right, ${C.accentMid} 0%, ${C.accent} 60%, #1A5F6E 100%)` }} />
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '1.6px', textTransform: 'uppercase', opacity: 0.78, marginBottom: '4px' }}>
               {currentUser.role === 'admin' ? 'Dashboard Administrator' : currentUser.role === 'guru' ? `Dashboard Guru · ${currentUser.subject || ''}` : 'Dashboard Siswa'}
