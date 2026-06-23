@@ -1036,7 +1036,7 @@ export default function App() {
         {/* HERO */}
         <div style={{
           position: 'relative', overflow: 'hidden',
-          background: `linear-gradient(135deg, #1A5F6E 0%, ${C.accent} 50%, ${C.accentMid} 100%)`,
+          background: `linear-gradient(120deg, ${C.accent} 0%, #4A9BAB 40%, #F0B86E 100%)`,
           padding: '16px 22px', borderRadius: '16px', color: '#fff',
           boxShadow: isDarkMode ? '0 10px 20px -14px rgba(0,0,0,0.5)' : '0 10px 20px -14px rgba(46,125,140,0.35)',
         }}>
