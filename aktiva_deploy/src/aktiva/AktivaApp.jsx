@@ -7,7 +7,7 @@ import {
   ShieldCheck, Users, FileText, CheckCircle, XCircle, 
   Award, BookOpen, Plus, Bell, LogOut, 
   Newspaper, TrendingUp, Edit, Trash2, UserCog, Upload, X, Send, Star, AlertTriangle, Activity,
-  Sun, Moon, Calendar, Search, Trophy, Sparkles, Rocket, Archive, Tag, ChevronRight, GraduationCap, Lightbulb
+  Sun, Moon, Calendar, Search, Trophy, Sparkles, Rocket, Archive, Tag, ChevronRight, GraduationCap, Lightbulb, Globe
 } from 'lucide-react';
 
 // ============================================================
@@ -203,17 +203,45 @@ const StatusBadge = ({ status, C, isDarkMode }) => {
   );
 };
 
-const StatCard = ({ title, value, icon, bg, C }) => (
-  <div style={{ background: C.card, padding: '20px', borderRadius: '16px', border: `1px solid ${C.border}`, display: 'flex', alignItems: 'center', gap: '16px' }}>
-    <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      {icon}
+const StatCard = ({ title, value, icon, bg, C, trend }) => {
+  const [hovered, setHovered] = React.useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: C.card, padding: '22px', borderRadius: '20px',
+        border: `1px solid ${hovered ? C.accent + '55' : C.border}`,
+        display: 'flex', flexDirection: 'column', gap: '14px',
+        boxShadow: hovered ? '0 10px 28px -8px rgba(46,125,140,0.18)' : '0 1px 3px rgba(15,23,42,0.03)',
+        transform: hovered ? 'translateY(-3px)' : 'translateY(0)',
+        transition: 'all 0.22s ease', cursor: 'default',
+      }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{
+          width: '46px', height: '46px', borderRadius: '13px', background: bg,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          transform: hovered ? 'scale(1.08)' : 'scale(1)', transition: 'transform 0.22s ease',
+        }}>
+          {icon}
+        </div>
+        {trend && (
+          <span style={{
+            fontSize: '11px', fontWeight: 700, padding: '3px 9px', borderRadius: '20px',
+            background: trend.up ? C.successLight : C.dangerLight,
+            color: trend.up ? C.success : C.danger,
+          }}>
+            {trend.up ? '↑' : '↓'} {trend.value}
+          </span>
+        )}
+      </div>
+      <div>
+        <div style={{ fontSize: '12.5px', color: C.stone, fontWeight: '600', marginBottom: '5px', letterSpacing: '0.2px' }}>{title}</div>
+        <div style={{ fontSize: '26px', fontWeight: '800', color: C.text, letterSpacing: '-0.5px' }}>{value}</div>
+      </div>
     </div>
-    <div>
-      <div style={{ fontSize: '13px', color: C.stone, fontWeight: '600', marginBottom: '4px' }}>{title}</div>
-      <div style={{ fontSize: '24px', fontWeight: '800', color: C.text }}>{value}</div>
-    </div>
-  </div>
-);
+  );
+};
 
 const ToastComponent = ({ toast, C }) => (
   <div style={{
@@ -261,6 +289,8 @@ export default function App() {
   const [selectedClass, setSelectedClass] = useState(null);
   const [activeTab, setActiveTab]     = useState('dashboard');
   const [searchUser, setSearchUser]   = useState('');
+  const [searchRapor, setSearchRapor] = useState('');
+  const [searchNilaiGuru, setSearchNilaiGuru] = useState('');
   const [dashboardChartClass, setDashboardChartClass] = useState('');
   const [editColModal, setEditColModal] = useState(false);
   const [renameColDraft, setRenameColDraft] = useState({});
@@ -309,6 +339,7 @@ export default function App() {
   const [newActOrganizer, setNewActOrganizer] = useState('Swasta');
   const [newActFileName, setNewActFileName] = useState('');
   const [newActFileUrl, setNewActFileUrl]   = useState(null);
+  const [newActLink, setNewActLink]         = useState('');
   const fileInputRef = useRef(null);
 
   // News deadline state (admin)
@@ -572,10 +603,10 @@ export default function App() {
     if (!newActFileUrl) return showToast('Upload sertifikat terlebih dahulu!', 'error');
     
     const pts = calculatePoints(newActLevel, newActRole, newActOrganizer);
-    const act = { id: Date.now(), studentId: currentUser.id, title: newActTitle, category: newActCategory, level: newActLevel, role: newActRole, organizer: newActOrganizer, points: pts, status: 'draft', fileUrl: newActFileUrl, fileName: newActFileName, note: '' };
+    const act = { id: Date.now(), studentId: currentUser.id, title: newActTitle, category: newActCategory, level: newActLevel, role: newActRole, organizer: newActOrganizer, points: pts, status: 'draft', fileUrl: newActFileUrl, fileName: newActFileName, proofLink: newActLink.trim() || null, note: '' };
     
     setActivities([act, ...activities]);
-    setNewActTitle(''); setNewActFileName(''); setNewActFileUrl(null); setNewActCategory('Kompetisi'); setNewActLevel('Sekolah'); setNewActRole('Peserta'); setNewActOrganizer('Swasta');
+    setNewActTitle(''); setNewActFileName(''); setNewActFileUrl(null); setNewActCategory('Kompetisi'); setNewActLevel('Sekolah'); setNewActRole('Peserta'); setNewActOrganizer('Swasta'); setNewActLink('');
     if (fileInputRef.current) fileInputRef.current.value = '';
     
     showToast(`Draf disimpan! Estimasi poin: +${pts}`, 'success');
@@ -1652,6 +1683,10 @@ export default function App() {
                 <button type="button" onClick={() => fileInputRef.current.click()} style={{...btnStyle(C.sidebar, 'sm'), padding: '0 12px'}}><Upload size={14}/></button>
               </div>
             </div>
+            <div>
+              <label style={labelStyle}>Tautan Bukti / Website Penyelenggara (opsional)</label>
+              <input type="url" value={newActLink} onChange={e => setNewActLink(e.target.value)} style={inputStyle} placeholder="https://contoh-lomba.com/hasil" />
+            </div>
             <div style={{ background: C.accentLight, padding: '12px', borderRadius: '8px', fontSize: '12px', color: C.accent, fontWeight: '600' }}>
               Estimasi Poin: +{calculatePoints(newActLevel, newActRole, newActOrganizer)}
             </div>
@@ -1677,6 +1712,11 @@ export default function App() {
                     <button onClick={() => setPreviewFile({ url: act.fileUrl, isPdf: act.fileName?.toLowerCase().endsWith('.pdf') })} style={{ background: 'none', border: 'none', color: C.stone, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', textDecoration: 'underline' }}>
                       Lihat Bukti
                     </button>
+                  )}
+                  {act.proofLink && (
+                    <a href={act.proofLink} target="_blank" rel="noopener noreferrer" style={{ color: C.accent, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', textDecoration: 'underline' }}>
+                      <Globe size={12} /> Tautan Sumber
+                    </a>
                   )}
                 </div>
                 {act.note && (
@@ -1733,6 +1773,11 @@ export default function App() {
                       <button onClick={() => setPreviewFile({ url: act.fileUrl, isPdf: act.fileName?.toLowerCase().endsWith('.pdf') })} style={{ ...btnStyle(C.stone, 'sm'), background: 'transparent', border: `1px solid ${C.stone}`, color: C.stone }}>
                         <FileText size={16} /> Lihat Dokumen
                       </button>
+                    )}
+                    {act.proofLink && (
+                      <a href={act.proofLink} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle(C.accent, 'sm'), background: 'transparent', border: `1px solid ${C.accent}`, color: C.accent, textDecoration: 'none' }}>
+                        <Globe size={16} /> Cek Sumber Lomba
+                      </a>
                     )}
                     <button onClick={() => setEditModal(act)} style={{ ...btnStyle(C.warning, 'sm'), background: 'transparent', border: `1px solid ${C.warning}`, color: C.warning }}>
                       <Edit size={16} /> Koreksi Bobot (+{act.points})
@@ -1933,6 +1978,16 @@ export default function App() {
               );
             })()}
 
+            <div style={{ position: 'relative', maxWidth: '300px', marginBottom: '14px' }}>
+              <Search size={15} style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)', color: C.stone }} />
+              <input
+                type="text"
+                value={searchNilaiGuru}
+                onChange={e => setSearchNilaiGuru(e.target.value)}
+                placeholder="Cari nama siswa di kelas ini..."
+                style={{ ...inputStyle, paddingLeft: '36px', fontSize: '13px', padding: '8px 12px 8px 36px' }}
+              />
+            </div>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead style={{ background: isDarkMode ? '#0F172A' : C.bg }}>
@@ -1944,7 +1999,7 @@ export default function App() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.filter(u => u.role === 'siswa' && u.className === selectedClass).map(student => {
+                  {users.filter(u => u.role === 'siswa' && u.className === selectedClass && (!searchNilaiGuru.trim() || u.name.toLowerCase().includes(searchNilaiGuru.trim().toLowerCase()))).map(student => {
                     const studentGradeObj = grades.find(g => g.studentId === student.id && g.subject === currentUser.subject) || { tasks: {} };
                     return (
                       <tr key={student.id}>
@@ -2052,6 +2107,9 @@ export default function App() {
     const ranked = [...rows].sort((a, b) => (b.avg ?? -1) - (a.avg ?? -1))
       .map((r, i) => ({ ...r, rank: r.avg === null ? '-' : i + 1 }));
 
+    const q = searchRapor.trim().toLowerCase();
+    const rankedFiltered = q ? ranked.filter(r => r.student.name.toLowerCase().includes(q) || (r.student.nip || '').toLowerCase().includes(q)) : ranked;
+
     const classAvg = (() => {
       const vals = ranked.map(r => r.avg).filter(v => v !== null);
       return vals.length ? Math.round((vals.reduce((a,b)=>a+b,0) / vals.length) * 10) / 10 : '-';
@@ -2071,6 +2129,19 @@ export default function App() {
           <StatCard title="Peringkat 1" value={ranked[0]?.student?.name?.split(' ')[0] || '-'} icon={<Trophy size={24} color={C.warning} />} bg={C.warningLight} C={C} />
         </div>
 
+        {subjects.length > 0 && (
+          <div style={{ position: 'relative', maxWidth: '320px' }}>
+            <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: C.stone }} />
+            <input
+              type="text"
+              value={searchRapor}
+              onChange={e => setSearchRapor(e.target.value)}
+              placeholder="Cari nama atau NIP/NPM siswa..."
+              style={{ ...inputStyle, paddingLeft: '38px' }}
+            />
+          </div>
+        )}
+
         {subjects.length === 0 ? (
           <div style={{ padding: 40, textAlign: 'center', background: C.card, borderRadius: 16, border: `1px dashed ${C.border}`, color: C.stone }}>
             Belum ada data nilai untuk siswa di kelas ini.
@@ -2089,7 +2160,10 @@ export default function App() {
                 </tr>
               </thead>
               <tbody>
-                {ranked.map(r => (
+                {rankedFiltered.length === 0 && (
+                  <tr><td colSpan={subjects.length + 3} style={{ padding: 30, textAlign: 'center', color: C.textMuted }}>Siswa tidak ditemukan.</td></tr>
+                )}
+                {rankedFiltered.map(r => (
                   <tr key={r.student.id} style={{ borderBottom: `1px solid ${C.border}` }}>
                     <td style={{ padding: '12px 16px', textAlign: 'center', fontWeight: 700, color: r.rank === 1 ? C.warning : r.rank === 2 ? C.accent : r.rank === 3 ? C.success : C.text }}>
                       {r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : r.rank}
