@@ -1040,7 +1040,7 @@ export default function App() {
           padding: '16px 22px', borderRadius: '16px', color: '#fff',
           boxShadow: isDarkMode ? '0 10px 20px -14px rgba(0,0,0,0.5)' : '0 10px 20px -14px rgba(46,125,140,0.35)',
         }}>
-          <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: 'rgba(255,255,255,0.08)' }} />
+          <div style={{ position: 'absolute', top: -30, right: -30, width: 100, height: 100, borderRadius: '50%', background: `linear-gradient(135deg, ${C.accent} 0%, ${C.accentMid} 45%, #6D28D9 100%)`, }} />
           <div style={{ position: 'relative', zIndex: 1 }}>
             <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '1.6px', textTransform: 'uppercase', opacity: 0.78, marginBottom: '4px' }}>
               {currentUser.role === 'admin' ? 'Dashboard Administrator' : currentUser.role === 'guru' ? `Dashboard Guru · ${currentUser.subject || ''}` : 'Dashboard Siswa'}
